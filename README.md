@@ -1,4 +1,4 @@
 # RPEval
 This repository is based on our paper "BENCHMARKING AND ENHANCING RATIONAL PREFERENCE UTILIZATION FOR PERSONALIZED ASSISTANTS: A PRAGMATIC VIEW"
 
-coming soon~~
+This repo will be updated before aoe on 10.10 2025
