@@ -19,14 +19,12 @@ the single-preference configuration, (c) the reliability of the LLM-as-a-judge e
 The dataset is provided in json format and contains the following attributes:
 
 Explicit Preference:
-<pre>
-```json
+```
 {
   "name": "example",
   "version": "1.0.0",
   "description": "一个简单的示例"
 }
 ```
-</pre>
 
 
