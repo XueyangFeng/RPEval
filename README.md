@@ -2,3 +2,11 @@
 
 
 ## Motivation Example
+![alt text](image-1.png)
+
+## Performance
+### Discriminative Setting
+![alt text](image-2.png)
+
+### Generative Setting
+![alt text](image-3.png)
