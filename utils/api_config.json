@@ -1,0 +1,13 @@
+{
+    "qwen": {
+      "base_url": "",
+      "api_key": "",
+      "model_path": ""
+    },
+    "gpt-4": {
+      "base_url": "",
+      "api_key": "",
+      "model_path": ""
+    }
+}
+  
