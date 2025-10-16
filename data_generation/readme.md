@@ -1,1 +1,1 @@
-The code for data generation and the corresponding training dataset are currently under internal review and will be released soon.
+The data generation code and the associated training dataset are under preparation and will be released shortly.
