@@ -1,4 +1,4 @@
-# RPEval: Benchmarking and Enhancing Rational Preference Utilization for Personalized Assistants: A Pragmatic View
+# RPEval: How Does Personalized Memory Shape LLM Behavior? Benchmarking Rational Preference Utilization in Personalized Assistants
 
 
 ## Motivation Example
