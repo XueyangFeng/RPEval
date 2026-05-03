@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
@@ -7,6 +8,9 @@ from collections import defaultdict, Counter
 import re
 import time
 import concurrent.futures
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from model.model import OpenAIClient
 from utils import load_config, load_json, safe_parse_json
 from prompts import Personalized_intent_mmcq, Personalized_intent_mmcq_reminder, Personalized_cot_mmcq_prompt, Personalized_intent_mmcq_reminder_implicit, Personalized_cot_mmcq_implicit_prompt, Personalized_intent_mmcq_implicit
@@ -116,7 +120,7 @@ def parse_pipe_rankings(pipe_str: str) -> list[str]:
     parts = [_normalize_rank(p) for p in parts]
     return parts or ["ABC"]
 
-def init_openai_client(config_path="./api_config.json", model_key="openai_41"):
+def init_openai_client(config_path="utils/api_config.json", model_key="openai_41"):
     config = load_config(config_path)[model_key]
     return OpenAIClient(
         base_url=config["base_url"],
@@ -691,5 +695,3 @@ if __name__ == "__main__":
         max_workers=args.threads,
         limit=args.limit
     )
-
-

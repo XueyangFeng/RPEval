@@ -7,6 +7,8 @@
 #   bash run_eval.sh qwen implicit cot
 # ==========================================
 
+cd "$(dirname "$0")/.."
+
 # 传参
 MODEL_KEY="gpt-4o"             # 模型名
 JUDGE_MODEL_KEY="gpt-41"            # 模型名
@@ -40,7 +42,7 @@ echo "Output:  $OUTPUT_DIR"
 echo "=========================================="
 
 # 运行 Python 主脚本
-python3 eval_single.py \
+python3 generation_task/eval_single.py \
     --model_key "$MODEL_KEY" \
     --judge_model_key "$JUDGE_MODEL_KEY" \
     --input_path "$INPUT_PATH" \

@@ -1,11 +1,15 @@
 import json
+import os
+import sys
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 # 顶部 imports 旁边加上
 import logging
 import traceback
-import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from model.model import OpenAIClient
 from prompts_715 import LLM_judge_multiple_template
 from prompts_715 import MLE_estimation_prompt_mmcq_template_v0, CPE_estimation_prompt_mmcq_template_v0, RPA_multi_generation_template 
@@ -105,7 +109,7 @@ def parse_pipe_rankings(pipe_str: str) -> list[str]:
     parts = [_normalize_rank(p) for p in parts]
     return parts or ["ABC"]
 
-def init_openai_client(config_path="./api_config.json", model_key="openai_41"):
+def init_openai_client(config_path="utils/api_config.json", model_key="openai_41"):
     config = load_config(config_path)[model_key]
     return OpenAIClient(
         base_url=config["base_url"],
@@ -272,7 +276,7 @@ def retry_once_with_timeout(fn, *args, timeout_s=630, **kwargs):
             # 仅允许重试一次
     raise last_err
 
-def init_openai_client(config_path="./api_config.json", model_key="openai_41"):
+def init_openai_client(config_path="utils/api_config.json", model_key="openai_41"):
     config = load_config(config_path)[model_key]
     print("config", config)
     return OpenAIClient(
@@ -473,21 +477,20 @@ if __name__ == "__main__":
     parser.add_argument("--judge_model_key", type=str, default="openai_41")
     parser.add_argument("--input_path", type=str, required=True)
     parser.add_argument("--output_dir", type=str, required=True)
-    parser.add_argument("--prompt_type", type=str, default="cot")
+    parser.add_argument("--prompt", "--prompt_type", dest="prompt_type", type=str, default="cot")
+    parser.add_argument("--persona", type=str, default="explicit")
     parser.add_argument("--threads", type=int, default=50)
     parser.add_argument("--limit", type=int, default=None)
     args = parser.parse_args()
 
     client = init_openai_client(model_key=args.model_key)
-    persona_type = f"{args.persona}_persona"
-
-    run_evaluation(
+    run_generation_evaluation(
         args.input_path,
         args.output_dir,
         client,
+        init_openai_client(model_key=args.judge_model_key),
         model_name=args.model_key,
         prompt_type=args.prompt_type,
         max_workers=args.threads,
         max_items=args.limit
     )
-

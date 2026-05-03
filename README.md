@@ -7,7 +7,7 @@ Different levels of PAs. In L1, memory is directly concatenated with the query, 
 
 ## Performance
 ### Discriminative Setting
-Performance of major LLMs on the discriminative intent matching accuracy in RPEVAL. The Human row reports the average accuracy from blind human annotation.
+Performance of major LLMs on the discriminative intent matching accuracy in RPEval. The Human row reports the average accuracy from blind human annotation.
 ![alt text](pic/image-2.png)
 
 ### Generative Setting
@@ -15,14 +15,62 @@ Performance of major LLMs on the discriminative intent matching accuracy in RPEV
 the single-preference configuration, (c) the reliability of the LLM-as-a-judge evaluation.
 ![alt text](pic/image-3.png)
 
-## Dataset Location
-The preference evaluation dataset is located in the benchmark_dataset directory.
+## Dataset Files
+
+The benchmark data is stored under `benchmark_dataset/`, and the data-generation pool is stored at `data_generation/data.json`.
+Croissant metadata is provided in `croissant.json`.
+
+```text
+benchmark_dataset/
+  explicit_preference/
+    single_testset.json
+    multi_testset.json
+  implicit_preference/
+    single_testset.json
+    multi_testset.json
+data_generation/
+  data.json
+croissant.json
+```
+
+## Dataset Statistics
+
+RPEval distinguishes between query-level records and atomic preference-query annotations. A single-preference record contains one annotated preference for one query. A multi-preference record contains multiple preferences for the same query, with one utilization label per preference.
+
+The released data-generation pool contains 756 query-level records and 8,567 atomic preference-query annotations:
+
+| Split | Query-level records | Atomic annotations | Ignore | Support | Dominate |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Data generation pool | 756 | 8,567 | 4,330 | 2,237 | 2,000 |
+
+The released evaluation benchmark contains explicit and implicit memory settings. Each setting has 300 query-level records and 953 atomic annotations:
+
+| Evaluation setting | Single records | Multi records | Atomic annotations | Ignore | Support | Dominate |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Explicit memory | 150 | 150 | 953 | 691 | 129 | 133 |
+| Implicit memory | 150 | 150 | 953 | 691 | 129 | 133 |
+
+## Label Space
+
+Single-preference files use textual labels:
+
+- `ignore`: the preference should be ignored for the current query.
+- `support` / `supportive`: the preference can support the response but should not dominate it.
+- `dominate`: the response should strongly follow the preference.
+
+Multi-preference files use compact per-preference labels in `intent_type`:
+
+- `A`: Ignore
+- `B`: Support
+- `C`: Dominate
+
+For multi-preference records, the `intent_type` string is aligned with the order of `persona`; for implicit-memory records, it is also aligned with `implicit_persona` and `reason`.
 
 ## Dataset Format
-The dataset is provided in json format and contains the following attributes:
 
-1. Single Preference:
-```
+The dataset is provided in JSON format. Single-preference records contain one preference:
+
+```json
 {
   "persona": "用户平时注重身心放松，喜欢通过冥想等方式为自己营造安静舒缓的氛围，对各种助眠和自我安抚的小技巧总是抱有好奇心。",
   "question": "有没有适合学生宿舍的夜间放松小仪式，能让我晚上不那么焦虑？",
@@ -31,67 +79,82 @@ The dataset is provided in json format and contains the following attributes:
 }
 ```
 
-2. Multiple Preference:
-```
+Multi-preference records contain multiple preferences:
+
+```json
 {
-    "persona": [
-      "用户习惯晚上活动较多，入睡时间比一般人要晚一些，觉得夜晚更安静自在。",
-      "用户平时喜欢和家人一起参与各类文化体验活动，乐于在日常生活中为孩子寻找新鲜有趣的学习机会。",
-      "用户极度反感人多和嘈杂的环境，尤其在出行安排上，绝不会选择任何热门、拥挤、需要排队或容易产生喧闹的地方。只要涉及人流密集或噪音大的场所，用户都会果断拒绝，哪怕是再有名的景点也绝不考虑。",
-      "用户平时喜欢挑战自我，偶尔会尝试一些高空、速度感强的极限运动，觉得那种肾上腺素飙升的感觉很刺激，但也不会刻意追求每次都要冒险。",
-      "用户对户外探险和野外生存有一定兴趣，偶尔会参加相关活动，觉得挑战自然是一种很有趣的体验。",
-      "用户平时喜欢自己动手搭建营地，觉得动手布置环境很有成就感，也能让人静下心来享受过程。",
-      "用户平日里喜欢在闲暇时分走进自然，享受绿意与清新的空气，对舒适自在的生活节奏有着温和的偏爱。",
-      "用户喜欢在户外挑战自己，偏爱选择那些路线复杂、需要体力和耐力的徒步活动，觉得征服难度本身就是一种乐趣。",
-      "用户平时喜欢在夜晚找些有趣的活动放松自己，比如偶尔和朋友小聚或体验城市夜生活，觉得这样能让生活多点乐趣。"
-    ],
-    "question": "我们准备国庆带孩子去成都周边玩几天，能帮忙设计个轻松点的行程吗？",
-    "intent_types": "ABCAAABAA",
-    "intents": [
-      "用户在涉及家庭出游和孩子时，完全没有提及或坚持自己作息晚的习惯，说明这一偏好更多是日常生活中的自然状态，而非强烈的生活主张。用户能够灵活调整作息以适应家庭需求，表明其对作息时间的偏好属于温和、可变的类型。",
-      "用户一贯重视孩子的成长体验，倾向于选择文化类活动，但这次出行又特别强调轻松，说明对活动的选择既有文化倾向，也注重舒适与亲子互动。用户对文化活动有一定偏好，但并非极端专注，愿意在亲子出行中兼顾多样体验。",
-      "用户明确表示孩子害怕拥挤和嘈杂，且希望行程轻松。国庆期间人流密集，用户对安静环境的需求非常突出。persona应具体化为：对人多、吵闹的环境极度排斥，任何涉及热门景点、排队、喧闹场所的建议都不可接受。",
-      "用户在涉及家庭出游和孩子时，主动选择了轻松的行程，完全没有考虑将极限运动融入其中，说明对极限运动的偏好更多是个人兴趣，在特定场合下可以轻松搁置，偏好强度属于日常爱好层面。",
-      "用户在涉及家庭和孩子的出行安排时，完全没有将野外生存体验的偏好带入决策，说明这种偏好更多是个人兴趣或偶尔尝试，而非生活中不可或缺的核心部分。",
-      "用户在涉及家庭出游和亲子活动时，优先考虑全家人的舒适和轻松氛围，而没有坚持自己动手搭建营地的习惯，说明这一偏好更多是个人兴趣或偶尔为之，并非生活中不可或缺的核心部分。",
-      "用户平时就有亲近自然的习惯，说明他对自然环境有一定偏好，但并未表现出极端的热衷或专业性。此次出行希望轻松，说明对舒适度有一定要求，偏好自然但不排斥常规的休闲方式，属于自然取向较明显但不排他、兼容性较强的用户。",
-      "用户在涉及家庭出游时，主动放下了对高难度徒步的偏好，说明这种偏好更多是个人兴趣或挑战自我的方式，而非生活中不可妥协的核心需求。用户能够灵活调整自己的活动选择，表明对高难度徒步的热爱属于中等偏好，更多体现在个人时间和特定场合。",
-      "用户在涉及家庭出游和亲子活动时，完全没有将夜间娱乐的个人兴趣带入决策，说明夜间娱乐只是日常生活中的一种放松方式，而非不可或缺的核心需求。"
-    ]
+  "persona": [
+    "用户习惯晚上活动较多，入睡时间比一般人要晚一些，觉得夜晚更安静自在。",
+    "用户平时喜欢和家人一起参与各类文化体验活动，乐于在日常生活中为孩子寻找新鲜有趣的学习机会。",
+    "用户极度反感人多和嘈杂的环境，尤其在出行安排上，绝不会选择任何热门、拥挤、需要排队或容易产生喧闹的地方。"
+  ],
+  "question": "我们准备国庆带孩子去成都周边玩几天，能帮忙设计个轻松点的行程吗？",
+  "intent_type": "ABC",
+  "reason": [
+    "用户能够灵活调整作息以适应家庭需求。",
+    "用户重视孩子的成长体验，倾向于选择文化类活动。",
+    "用户对安静环境的需求非常突出。"
+  ]
 }
 ```
 
+Implicit-memory files additionally include `implicit_persona`, which rewrites each explicit preference as a short dialogue history.
+
+## Croissant Metadata
+
+`croissant.json` describes the released JSON files, their checksums, file sizes, and record schemas. If you modify any dataset file, regenerate the checksums in `croissant.json` before submitting or releasing a new version.
+
+## License
+
+Code is released under the MIT License. Dataset files and Croissant metadata are released under CC BY-NC 4.0. See `LICENSE` for details.
+
 ## Benchmarking on RPEval
-### **nvironment Setup**
+
+### Environment Setup
+
 Create a conda environment:
-```
+
+```bash
 conda create -n rpeval python=3.10 -y
 conda activate rpeval
 ```
 
 Install the required dependencies:
-```
+
+```bash
 pip install -r requirements.txt
 ```
 
-### **API Configuration**
-All LLM (Large Language Model) calls in this repository are made using OpenAI-like interfaces. To configure the APIs:
+### API Configuration
 
-1. Set your API information in the `config/api_config.json` file.
-2. For closed-source models, set the information directly in the config.
-3. For open-source models, use `vllm` for local deployment. We have provided an example script in the `model/` directory.
+All LLM calls use OpenAI-compatible interfaces. Configure model endpoints in `utils/api_config.json`.
 
+For closed-source models, set the `base_url`, `api_key`, and `model_path` fields in `utils/api_config.json`. For open-source models, deploy an OpenAI-compatible local server, for example with `utils/vllm_deploy.sh`, and then point `base_url` to that server.
 
-### Example Usages:
-The following scripts demonstrate how to benchmark various scenarios. You can flexibly modify the arguments within these scripts to assess different preference styles, task type to create varying task difficulties.
+### Example Usage
 
-#### Example 1: Benchmark Discriminative Tasks
-```
+The following scripts demonstrate the benchmark entry points. You can edit the variables inside each script to change the model key, memory setting, prompt type, thread count, or evaluation limit.
+
+Benchmark discriminative single-preference tasks:
+
+```bash
 bash discrimation_task/single_intent.sh
 ```
 
+Benchmark discriminative multi-preference tasks:
 
-#### Example 2: Benchmark Generative Tasks
+```bash
+bash discrimation_task/multi_intent.sh
 ```
+
+Benchmark generative single-preference tasks:
+
+```bash
 bash generation_task/single_intent.sh
+```
+
+Benchmark generative multi-preference tasks:
+
+```bash
+bash generation_task/multi_intent.sh
 ```

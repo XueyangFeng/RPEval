@@ -1,8 +1,12 @@
 import json
+import os
+import sys
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
-import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from model.model import OpenAIClient
 from prompts_715 import LLM_judge_template, RPA_generation_template
 from prompts_715 import MLE_estimation_template_v1, CPE_recall_estimation_prompt, CPE_intent_estimation_prompt, MLE_estimation_template_v2
@@ -134,7 +138,7 @@ def retry_once_with_timeout(fn, *args, timeout_s=130, **kwargs):
             # 仅允许重试一次
     raise last_err
 
-def init_openai_client(config_path="./api_config.json", model_key="openai_41"):
+def init_openai_client(config_path="utils/api_config.json", model_key="openai_41"):
     config = load_config(config_path)[model_key]
     print("config", config)
     return OpenAIClient(
@@ -147,8 +151,14 @@ def evaluate_generated_response(item, prompt_type, model, generator_client, judg
     question = item.get("question") or item.get("query")
     persona = item["persona"]
     intent_type = item["intent_type"]
-    if intent_type == "调和偏好":
-        intent_type = "支持性偏好"
+    intent_type = {
+        "ignore": "忽略偏好",
+        "support": "支持性偏好",
+        "supportive": "支持性偏好",
+        "调和偏好": "支持性偏好",
+        "dominate": "以偏好为主线",
+        "dominant": "以偏好为主线",
+    }.get(str(intent_type).strip(), intent_type)
     intent = item.get("intent") or item.get("reason")
     print(f"[EVALUATE] question: {question} | Persona: {persona} | Intent Type: {intent_type} | Intent: {intent}...")
 
@@ -391,19 +401,29 @@ def run_generation_evaluation(input_json_path, output_dir, generator_client, jud
 
 
 if __name__ == "__main__":
-    model_key = "openai_5"  # 可以根据需要修改为其他模型键
-    judge_model_key = "openai_41"  # 可以根据需要修改为其他模型键
+    import argparse
 
-    generator_client = init_openai_client(model_key=model_key)
-    judge_client = init_openai_client(model_key=judge_model_key)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_key", type=str, default="qwen")
+    parser.add_argument("--judge_model_key", type=str, default="openai_41")
+    parser.add_argument("--input_path", type=str, required=True)
+    parser.add_argument("--output_dir", type=str, required=True)
+    parser.add_argument("--prompt", "--prompt_type", dest="prompt_type", type=str, default="cot")
+    parser.add_argument("--persona", type=str, default="explicit")
+    parser.add_argument("--threads", type=int, default=50)
+    parser.add_argument("--limit", type=int, default=None)
+    args = parser.parse_args()
 
-    explicit_input_path = "./data729/filtered_testset.json"  # 输入文件路径
-    implicit_input_path = "./data813/implicit_persona.json"  # 输入文件路径
-    output_dir = "./eval8/eval_gen"
+    generator_client = init_openai_client(model_key=args.model_key)
+    judge_client = init_openai_client(model_key=args.judge_model_key)
 
-    prompt_type = "cot"  # 可以是 "zs", "relevance", "cot", "rsa", "reminder", "rule", "mle", "cpe_recall", "rpa", "cpe_intent", "mle_v2"
-    persona_type = "explicit"  # 可以是 "explicit" 或 "implicit"
-
-    output_dir = f"./eval8/eval_gen/{persona_type}/{prompt_type}"
-    input_path = explicit_input_path if persona_type == "explicit" else implicit_input_path
-    run_generation_evaluation(input_path, output_dir, generator_client, judge_client, model_name=model_key, prompt_type=prompt_type, max_workers=20, max_items=150)
+    run_generation_evaluation(
+        args.input_path,
+        args.output_dir,
+        generator_client,
+        judge_client,
+        model_name=args.model_key,
+        prompt_type=args.prompt_type,
+        max_workers=args.threads,
+        max_items=args.limit,
+    )

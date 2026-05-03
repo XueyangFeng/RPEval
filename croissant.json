@@ -1,0 +1,380 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "name": "RPEval",
+  "alternateName": "Rational Preference Utilization Evaluation Benchmark",
+  "description": "RPEval is a benchmark for evaluating whether LLM-powered personalized assistants can rationally decide when and how to use user preferences. The dataset contains synthetic user queries paired with explicit or implicit preference memories and labels for preference utilization: Ignore, Support, and Dominate.",
+  "url": "https://anonymous.4open.science/r/RPEval-E4B0",
+  "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "version": "1.0-submission",
+  "datePublished": "2026-05-03",
+  "inLanguage": [
+    "zh"
+  ],
+  "isLiveDataset": false,
+  "keywords": [
+    "personalized assistants",
+    "large language models",
+    "benchmark",
+    "evaluation",
+    "rational personalization",
+    "synthetic dataset"
+  ],
+  "creator": [
+    {
+      "@type": "Organization",
+      "name": "Anonymous Authors"
+    }
+  ],
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "explicit_single_json",
+      "name": "Explicit single-preference test set",
+      "description": "Single-preference evaluation split with explicit user preference memories.",
+      "contentUrl": "benchmark_dataset/explicit_preference/single_testset.json",
+      "encodingFormat": "application/json",
+      "sha256": "dcee5db3a0c9ef249740f7c0c03c807a6f88d29e194ffc8b5cb96550de949626",
+      "contentSize": "82633"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "explicit_multi_json",
+      "name": "Explicit multi-preference test set",
+      "description": "Multi-preference evaluation split with explicit user preference memories.",
+      "contentUrl": "benchmark_dataset/explicit_preference/multi_testset.json",
+      "encodingFormat": "application/json",
+      "sha256": "0c51f59275348687248c563f863787622711cd2f11a79d5d4c59401916a71796",
+      "contentSize": "149551"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "implicit_single_json",
+      "name": "Implicit single-preference test set",
+      "description": "Single-preference evaluation split with user preferences represented as implicit dialogue histories.",
+      "contentUrl": "benchmark_dataset/implicit_preference/single_testset.json",
+      "encodingFormat": "application/json",
+      "sha256": "3b7cd0ae6977d9abc207a0206bc0a38dd9bb0a7a38f881c0a597732da234beb4",
+      "contentSize": "313370"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "implicit_multi_json",
+      "name": "Implicit multi-preference test set",
+      "description": "Multi-preference evaluation split with user preferences represented as implicit dialogue histories.",
+      "contentUrl": "benchmark_dataset/implicit_preference/multi_testset.json",
+      "encodingFormat": "application/json",
+      "sha256": "112bac9cda0e6393b92b3710d7461c1c4671b3ede25ed0d5fc2a8d8848c85762",
+      "contentSize": "1486131"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "data_generation_pool_json",
+      "name": "Atomic data generation pool",
+      "description": "Pool of query-level records used in data generation. Each record groups generated preferences by utilization label.",
+      "contentUrl": "data_generation/data.json",
+      "encodingFormat": "application/json",
+      "sha256": "e03a7c1e4084f092e399ca600535363044b4d36087da00afd0ef05b49dfec18e",
+      "contentSize": "1548420"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "single_preference_records",
+      "name": "Single-preference evaluation records",
+      "description": "Records for explicit and implicit single-preference evaluation. Each top-level JSON object contains one query, one preference memory, and one utilization label.",
+      "data": [
+        {
+          "fileObject": {
+            "@id": "explicit_single_json"
+          },
+          "extract": {
+            "jsonPath": "$[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "implicit_single_json"
+          },
+          "extract": {
+            "jsonPath": "$[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "single_preference_records/persona",
+          "name": "persona",
+          "description": "Explicit user preference memory.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.persona"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "single_preference_records/implicit_persona",
+          "name": "implicit_persona",
+          "description": "Dialogue-style implicit expression of the user preference. Present in implicit-memory records.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.implicit_persona"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "single_preference_records/question",
+          "name": "question",
+          "description": "User query.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.question"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "single_preference_records/intent_type",
+          "name": "intent_type",
+          "description": "Ground-truth preference utilization label: ignore, support/supportive, or dominate.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.intent_type"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "single_preference_records/intent",
+          "name": "intent",
+          "description": "Natural-language description of the intended response behavior. Present in some single-preference records.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.intent"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "single_preference_records/reason",
+          "name": "reason",
+          "description": "Annotation rationale for the utilization label.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.reason"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "multi_preference_records",
+      "name": "Multi-preference evaluation records",
+      "description": "Records for explicit and implicit multi-preference evaluation. Each top-level JSON object contains one query and multiple preference memories. The intent_type string aligns one character per preference: A=Ignore, B=Support, C=Dominate.",
+      "data": [
+        {
+          "fileObject": {
+            "@id": "explicit_multi_json"
+          },
+          "extract": {
+            "jsonPath": "$[*]"
+          }
+        },
+        {
+          "fileObject": {
+            "@id": "implicit_multi_json"
+          },
+          "extract": {
+            "jsonPath": "$[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "multi_preference_records/persona",
+          "name": "persona",
+          "description": "List of explicit user preference memories.",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "extract": {
+              "jsonPath": "$.persona[*]"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "multi_preference_records/implicit_persona",
+          "name": "implicit_persona",
+          "description": "List of dialogue-style implicit expressions of the user preferences. Present in implicit-memory records.",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "extract": {
+              "jsonPath": "$.implicit_persona[*]"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "multi_preference_records/question",
+          "name": "question",
+          "description": "User query.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.question"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "multi_preference_records/intent_type",
+          "name": "intent_type",
+          "description": "String of per-preference labels aligned with persona order: A=Ignore, B=Support, C=Dominate.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.intent_type"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "multi_preference_records/reason",
+          "name": "reason",
+          "description": "List of annotation rationales aligned with the preferences.",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "extract": {
+              "jsonPath": "$.reason[*]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "@type": "cr:RecordSet",
+      "@id": "data_generation_pool_records",
+      "name": "Data generation pool records",
+      "description": "Query-level generation pool. Each record groups generated preferences by target utilization label.",
+      "data": [
+        {
+          "fileObject": {
+            "@id": "data_generation_pool_json"
+          },
+          "extract": {
+            "jsonPath": "$[*]"
+          }
+        }
+      ],
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "data_generation_pool_records/question",
+          "name": "question",
+          "description": "User query.",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "jsonPath": "$.question"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "data_generation_pool_records/ignore",
+          "name": "ignore",
+          "description": "Generated preferences intended to be ignored for the query.",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "extract": {
+              "jsonPath": "$.ignore[*]"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "data_generation_pool_records/supportive",
+          "name": "supportive",
+          "description": "Generated preferences intended to support but not dominate the query.",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "extract": {
+              "jsonPath": "$.supportive[*]"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "data_generation_pool_records/dominant",
+          "name": "dominant",
+          "description": "Generated preferences intended to dominate the query.",
+          "dataType": "sc:Text",
+          "repeated": true,
+          "source": {
+            "extract": {
+              "jsonPath": "$.dominant[*]"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

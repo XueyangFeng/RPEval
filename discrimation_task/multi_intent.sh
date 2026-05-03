@@ -7,6 +7,8 @@
 #   bash run_eval.sh qwen implicit cot
 # ==========================================
 
+cd "$(dirname "$0")/.."
+
 # 传参
 MODEL_KEY="gpt-4o"             # 模型名
 PERSONA="explicit"          # explicit / implicit
@@ -39,7 +41,7 @@ echo "Output:  $OUTPUT_DIR"
 echo "=========================================="
 
 # 运行 Python 主脚本
-python3 eval_multi.py \
+python3 discrimation_task/eval_multi.py \
     --model_key "$MODEL_KEY" \
     --input_path "$INPUT_PATH" \
     --output_dir "$OUTPUT_DIR" \

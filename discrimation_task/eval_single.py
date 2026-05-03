@@ -1,8 +1,12 @@
 import json
 import math
+import os
+import sys
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from model.model import OpenAIClient
 from prompts import Personalized_intent_mcq, Personalized_intent_mcq_reminder, cot_reasoner_prompt, Personalized_rule_cot_mcq_prompt
@@ -111,7 +115,7 @@ def rpa_new(item, client):
         "policy": aggregation_result["top_policy"]  # for统一结构
     }
 
-def init_openai_client(config_path="./api_config.json", model_key="openai_41"):
+def init_openai_client(config_path="utils/api_config.json", model_key="openai_41"):
     config = load_config(config_path)[model_key]
     return OpenAIClient(
         base_url=config["base_url"],
@@ -139,8 +143,16 @@ def evaluate_single_item(item, prompt_type, persona_type, model, client):
     }
 
     # 中文 → 字母
-    label_to_option = {v: k for k, v in option_map.items()}
-    ground_truth_letter = label_to_option.get(ground_truth_text, "")
+    label_to_option = {
+        **{v: k for k, v in option_map.items()},
+        "ignore": "A",
+        "support": "B",
+        "supportive": "B",
+        "支持性偏好": "B",
+        "dominate": "C",
+        "dominant": "C",
+    }
+    ground_truth_letter = label_to_option.get(str(ground_truth_text).strip(), "")
 
     if prompt_type == "rpa":
         response_json = rpa(item)
@@ -363,4 +375,3 @@ if __name__ == "__main__":
         max_workers=args.threads,
         limit=args.limit
     )
-
