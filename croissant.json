@@ -31,6 +31,8 @@
     "md5": "cr:md5",
     "parentField": "cr:parentField",
     "path": "cr:path",
+    "prov": "http://www.w3.org/ns/prov#",
+    "rai": "http://mlcommons.org/croissant/RAI/",
     "recordSet": "cr:recordSet",
     "references": "cr:references",
     "regex": "cr:regex",
@@ -46,8 +48,9 @@
   "alternateName": "Rational Preference Utilization Evaluation Benchmark",
   "description": "RPEval is a benchmark for evaluating whether LLM-powered personalized assistants can rationally decide when and how to use user preferences. The dataset contains synthetic user queries paired with explicit or implicit preference memories and labels for preference utilization: Ignore, Support, and Dominate.",
   "url": "https://anonymous.4open.science/r/RPEval-E4B0",
+  "citation": "Anonymous Authors. RPEval: Rational Preference Utilization Evaluation Benchmark. NeurIPS 2026 submission.",
   "license": "https://creativecommons.org/licenses/by-nc/4.0/",
-  "version": "1.0-submission",
+  "version": "1.0.0",
   "datePublished": "2026-05-03",
   "inLanguage": [
     "zh"
@@ -67,11 +70,52 @@
       "name": "Anonymous Authors"
     }
   ],
+  "rai:dataLimitations": "RPEval is a synthetic benchmark designed to reflect common patterns in real personalized-assistant interactions, while not fully covering the full diversity and complexity of naturally occurring user data. The current release focuses on Chinese-language queries and preference memories. It is intended for research evaluation of rational preference utilization in personalized assistants, including intent classification, response evaluation, and failure-mode analysis under the benchmark protocol. The dataset has not been validated for high-risk decision-making scenarios.",
+  "rai:dataBiases": "Although the dataset incorporates substantial human validation and quality-control procedures, as a benchmark constructed through a synthetic pipeline it does not fully cover the full diversity and complexity of naturally occurring user data, and it is still inevitably influenced by the task taxonomy and the human validation process. The current release is centered on Chinese-language scenarios and personalized-assistant tasks, and therefore may not fully represent real user interactions in other languages, cultural settings, or application environments.",
+  "rai:personalSensitiveInformation": "This dataset does not contain real personal or sensitive information about identifiable individuals. The preference memories, implicit dialogue histories, queries, and rationales in the dataset are synthetic content constructed for research evaluation. The text may involve topics such as family, health, culture, or lifestyle, but these are only used to construct fictional user profiles and interaction scenarios and do not correspond to real individuals.",
+  "rai:dataUseCases": "This dataset is primarily intended to evaluate personalized assistants on the task of rational preference utilization, namely whether a model can use memory in an appropriate way at an appropriate time. The dataset has not been validated for high-risk decision-support scenarios.",
+  "rai:dataSocialImpact": "This dataset can support research on more rational memory use in personalized assistants, helping systems better capture user intent, reduce inappropriate memory invocation, and improve the transparency and controllability of personalization. At the same time, more fine-grained memory use may introduce risks such as privacy leakage, misuse, over-profiling, or manipulation. To mitigate these risks, the released data was manually screened to remove personally identifiable or inappropriate content, and the dataset is released for research-oriented use.",
+  "rai:hasSyntheticData": true,
+  "prov:wasDerivedFrom": [
+    {
+      "@type": "sc:CreativeWork",
+      "name": "Seed topics, scenario prompts, and benchmark construction materials designed by the dataset creators",
+      "description": "This dataset is not directly derived from a pre-existing public dataset. Instead, it is generated based on seed topics, scenario prompts, and a benchmark construction pipeline designed by the dataset creators. Additional details of the benchmark construction and generation process are provided in the anonymous repository and the paper appendix.",
+      "url": "https://anonymous.4open.science/r/RPEval-E4B0",
+      "license": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Anonymous Authors"
+      }
+    }
+  ],
+  "prov:wasGeneratedBy": [
+    {
+      "@type": "sc:CreateAction",
+      "name": "Synthetic query and preference generation pipeline",
+      "description": "The dataset was generated through a multi-stage benchmark construction pipeline. The creators first designed seed topics and scenarios, then used large language models to generate open-ended queries and preference memories with different applicability labels. The data was further expanded through transformations such as explicit-to-implicit rewriting and single-to-multi composition. Quality-control rules and human validation were then applied to filter the generated data and construct the final evaluation sets. A subset of examples was additionally reviewed and adjudicated by human annotators to form the gold-standard evaluation sets.",
+      "instrument": [
+        {
+          "@type": "sc:SoftwareApplication",
+          "name": "Large language models accessed through OpenAI-compatible APIs"
+        },
+        {
+          "@type": "sc:SoftwareApplication",
+          "name": "Repository scripts in data_generation/, discrimation_task/, and generation_task/"
+        }
+      ]
+    },
+    {
+      "@type": "sc:AssessAction",
+      "name": "Human validation and adjudication",
+      "description": "Human annotators reviewed sampled synthetic instances, checked label consistency, and resolved disagreements through an adjudication protocol before release of the benchmark evaluation sets."
+    }
+  ],
   "distribution": [
     {
-      "@type": "cr:FileObject",
+      "@type": "sc:FileObject",
       "@id": "explicit_single_json",
-      "name": "Explicit single-preference test set",
+      "name": "explicit_single_preference_test_set",
       "description": "Single-preference evaluation split with explicit user preference memories.",
       "contentUrl": "benchmark_dataset/explicit_preference/single_testset.json",
       "encodingFormat": "application/json",
@@ -79,9 +123,9 @@
       "contentSize": "82633"
     },
     {
-      "@type": "cr:FileObject",
+      "@type": "sc:FileObject",
       "@id": "explicit_multi_json",
-      "name": "Explicit multi-preference test set",
+      "name": "explicit_multi_preference_test_set",
       "description": "Multi-preference evaluation split with explicit user preference memories.",
       "contentUrl": "benchmark_dataset/explicit_preference/multi_testset.json",
       "encodingFormat": "application/json",
@@ -89,9 +133,9 @@
       "contentSize": "149551"
     },
     {
-      "@type": "cr:FileObject",
+      "@type": "sc:FileObject",
       "@id": "implicit_single_json",
-      "name": "Implicit single-preference test set",
+      "name": "implicit_single_preference_test_set",
       "description": "Single-preference evaluation split with user preferences represented as implicit dialogue histories.",
       "contentUrl": "benchmark_dataset/implicit_preference/single_testset.json",
       "encodingFormat": "application/json",
@@ -99,9 +143,9 @@
       "contentSize": "313370"
     },
     {
-      "@type": "cr:FileObject",
+      "@type": "sc:FileObject",
       "@id": "implicit_multi_json",
-      "name": "Implicit multi-preference test set",
+      "name": "implicit_multi_preference_test_set",
       "description": "Multi-preference evaluation split with user preferences represented as implicit dialogue histories.",
       "contentUrl": "benchmark_dataset/implicit_preference/multi_testset.json",
       "encodingFormat": "application/json",
@@ -109,9 +153,9 @@
       "contentSize": "1486131"
     },
     {
-      "@type": "cr:FileObject",
+      "@type": "sc:FileObject",
       "@id": "data_generation_pool_json",
-      "name": "Atomic data generation pool",
+      "name": "atomic_data_generation_pool",
       "description": "Pool of query-level records used in data generation. Each record groups generated preferences by utilization label.",
       "contentUrl": "data_generation/data.json",
       "encodingFormat": "application/json",
